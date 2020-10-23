@@ -6,22 +6,13 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.svm import LinearSVC
 
-data = pandas.read_csv("data.csv")
+data = pandas.read_csv("bitstamp.csv")
+# Create new dataframe dropping rows with NaN values
+df = data.dropna()
 
-x, y = make_classification(n_samples=5000, n_features=10,
-                           n_classes=2,
-                           n_clusters_per_class=1)
-
-xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size=0.33)
-lsvc = LinearSVC(verbose=0)
-print(lsvc)
-
-LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
-          intercept_scaling=1, loss='squared_hinge', max_iter=10000,
-          multi_class='ovr', penalty='l2', random_state=None, tol=0.0001,
-          verbose=0)
-
-lsvc.fit(xtrain, ytrain)
-score = lsvc.score(xtrain, ytrain)
-print("Score: ", score)
-
+# Get unix timestamp for 01/01/2017
+timestamp = pandas.Timestamp("01/01/2017").timestamp()
+# Drop rows after 01/01/2017
+df = df[df["Timestamp"] > timestamp]
+print(df)
+# var = data.groupby("Close")

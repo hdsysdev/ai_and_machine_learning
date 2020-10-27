@@ -42,8 +42,8 @@ scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
 
 # Converting timestamp values to datetime64 for plotting as human readable time
-# Plotting every 10th value to avoid over-congestion of points
-plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::10], scaled_y_test[::10], s=2, label="Regular")
+# Plotting every 5th value to avoid over-congestion of points
+plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50], scaled_y_test[::50], s=1, label="Regular")
 # Generating polynomial features up to a degree of 8 to find the most optimal degree
 for polyDegree in range(2, 9):
     lr = make_pipeline(PolynomialFeatures(polyDegree), LinearRegression())

@@ -23,14 +23,13 @@ df = df[df["Timestamp"] > timestamp]
 # Create new column with python datetime to plt graph
 df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
 
-plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
-plot.title("Bitcoin closing price from the start of 2017")
-plot.ylabel("Closing Price in $")
-plot.xlabel("Date")
-plot.xticks(rotation=40)
-plot.grid(True)
-plot.show()
-
+# plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
+# plot.title("Bitcoin closing price from the start of 2017")
+# plot.ylabel("Closing Price in $")
+# plot.xlabel("Date")
+# plot.xticks(rotation=40)
+# plot.grid(True)
+# plot.show()
 
 x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
@@ -42,17 +41,20 @@ scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
 
-plot.scatter(x_test.values.astype(dtype='datetime64[s]'), scaled_y_test, s=1, alpha=0.3)
-# Generating polynomial features to a degree of 8
+# Converting timestamp values to datetime64 for plotting as human readable time
+# Plotting every 10th value to avoid over-congestion of points
+plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::10], scaled_y_test[::10], s=2, label="Regular")
+# Generating polynomial features up to a degree of 8 to find the most optimal degree
 for polyDegree in range(2, 9):
     lr = make_pipeline(PolynomialFeatures(polyDegree), LinearRegression())
     lr.fit(scaled_x_train, scaled_y_train)
     y_predicted = lr.predict(scaled_x_test)
     score = lr.score(scaled_x_test, scaled_y_test)
-    plot.plot_date(x_test.values.astype(dtype='datetime64[s]'),
-                   y_predicted, label="Degree " + str(polyDegree) + " R^2 Score: " + str(score),
-                   ls="--")
+    # Using scatter plot as plot_date function's linewidth property isn't working
+    plot.scatter(x_test.values.astype(dtype='datetime64[s]'),
+                 y_predicted, label="Degree " + str(polyDegree) + " R^2 Score: " + str(format(score, ".3f")),
+                 s=12)
     print("Polynomial Degree " + str(polyDegree) + " Score: " + str(score))
-plot.rcParams['agg.path.chunksize'] = 100000
-plot.legend(loc="lower right")
+
+plot.legend(loc="lower right", fontsize="small")
 plot.show()

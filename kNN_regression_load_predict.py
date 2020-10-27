@@ -1,3 +1,4 @@
+import joblib
 import pandas
 import numpy as np
 import matplotlib.pyplot as plot
@@ -6,6 +7,7 @@ from sklearn.datasets import make_classification
 from sklearn.linear_model import LinearRegression, SGDRegressor
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.svm import LinearSVC
@@ -37,13 +39,12 @@ x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
 minMaxScaler = MinMaxScaler()
-scaled_x_train = minMaxScaler.fit_transform(x_train)
+
+regressor = joblib.load("kNN.model")
 scaled_x_test = minMaxScaler.fit_transform(x_test)
-scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
-regressor = SGDRegressor()
-model = GridSearchCV(regressor, {'loss': ['squared_loss', 'huber', 'epsilon_insensitive', 'squared_epsilon_insensitive'],
-                                 'penalty': ['l2', 'l1', 'elasticnet']})
-model.fit(scaled_x_train, scaled_y_train.ravel())
-print(model.score(scaled_x_test, scaled_y_test))
+print(regressor.score(scaled_x_test, scaled_y_test))
+
+

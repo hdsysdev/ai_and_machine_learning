@@ -39,10 +39,26 @@ x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+
 minMaxScaler = MinMaxScaler()
-scaled_x_train = minMaxScaler.fit_transform(x_train)
-scaled_x_test = minMaxScaler.fit_transform(x_test)
-scaled_y_train = minMaxScaler.fit_transform(y_train)
-scaled_y_test = minMaxScaler.fit_transform(y_test)
+x_test = minMaxScaler.fit_transform(x_test)
+y_test = minMaxScaler.fit_transform(y_test)
+
+totalItems = x_test.size
+diffSum = 0
+
+print(x_test)
 regressor = joblib.load("kNN.model")
-print(regressor.score(scaled_x_test, scaled_y_test))
+y_predicted = regressor.predict(x_test)
+
+for i in range(0, totalItems):
+    diffSum += (y_test[i] - y_predicted[i])**2
+
+print("Mean square error: " + str(diffSum/totalItems))
+# scaled_x_train = minMaxScaler.fit_transform(x_train)
+# scaled_x_test = minMaxScaler.fit_transform(x_test)
+# scaled_y_train = minMaxScaler.fit_transform(y_train)
+# scaled_y_test = minMaxScaler.fit_transform(y_test)
+# print(regressor.score(scaled_x_test, scaled_y_test))
+
+

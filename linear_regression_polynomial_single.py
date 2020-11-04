@@ -51,9 +51,9 @@ y_predicted = lr.predict(scaled_x_test)
 score = lr.score(scaled_x_test, scaled_y_test)
 # Using scatter plot as plot_date function's linewidth property isn't working
 plot.scatter(x_test.values.astype(dtype='datetime64[s]'),
-             y_predicted, label="Degree 6" + " R^2 Score: " + str(format(score, ".3f")),
+             y_predicted, label="Degree 8" + " R^2 Score: " + str(format(score, ".3f")),
              s=12)
-print("Polynomial Degree 6" + " Score: " + str(score))
+print("Polynomial Degree 8" + " Score: " + str(score))
 
 plot.legend(loc="lower right", fontsize="small")
 plot.show()

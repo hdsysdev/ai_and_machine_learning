@@ -36,11 +36,12 @@ df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
 
 test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2017").timestamp()) & (
             df["Timestamp"] <= pandas.Timestamp("01/01/2018").timestamp())]
-x = pandas.DataFrame(df["Timestamp"])
-y = pandas.DataFrame(df["Close"])
 
 test_x = test_df[["Timestamp"]]
 test_y = test_df[["Close"]]
+
+x = pandas.DataFrame(df["Timestamp"])
+y = pandas.DataFrame(df["Close"])
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 minMaxScaler = MinMaxScaler()
@@ -56,8 +57,7 @@ scaled_y_test = minMaxScaler.fit_transform(y_test)
 # Plotting every 50th value to avoid over-congestion of points
 plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50], minMaxScaler.inverse_transform(scaled_y_test[::50]),
              s=1, label="Regular")
-Ridge().get_params().keys()
-# Generating polynomial features up to a degree of 8 to find the most optimal degree
+
 parameters = {"fit_intercept": [True, False],
               "solver": ["svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"]}
 
@@ -68,9 +68,9 @@ y_predicted = regressor.predict(scaled_x_test)
 score = regressor.score(scaled_x_test, scaled_y_test)
 # Using scatter plot as plot_date function's linewidth property isn't working
 plot.scatter(x_test.astype(dtype='datetime64[s]'),
-             minMaxScaler.inverse_transform(y_predicted), label="Degree 6" + " R^2 Score: " + str(format(score, ".3f")),
+             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
              s=12)
-print("Polynomial Degree 6" + " Score: " + str(score))
+print("Score: " + str(score))
 
 plot.legend(loc="lower right", fontsize="small")
 plot.show()

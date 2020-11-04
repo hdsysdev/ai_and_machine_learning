@@ -41,6 +41,21 @@ scaled_x_train = minMaxScaler.fit_transform(x_train)
 scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
+
+plot.scatter(x_test.astype(dtype='datetime64[s]')[::50],
+             minMaxScaler.inverse_transform(scaled_y_test[::50]),
+             s=1, label="Regular")
+
 lr = LinearRegression(normalize=True)
+
 lr.fit(scaled_x_train, scaled_y_train)
-print(lr.score(scaled_x_test, scaled_y_test))
+
+y_predicted = lr.predict(scaled_x_test)
+score = lr.score(scaled_x_test, scaled_y_test)
+# Using scatter plot as plot_date function's linewidth property isn't working
+plot.scatter(x_test.astype(dtype='datetime64[s]'),
+             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
+             s=12)
+plot.legend(loc="lower right", fontsize="small")
+plot.show()
+print("Score: " + str(score))

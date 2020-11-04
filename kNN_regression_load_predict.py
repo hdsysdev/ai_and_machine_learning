@@ -45,6 +45,12 @@ minMaxScaler = MinMaxScaler()
 regressor = joblib.load("kNN.model")
 scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
-print(regressor.score(scaled_x_test, scaled_y_test))
+score = regressor.score(scaled_x_test, scaled_y_test)
+print("Score: " + str(score))
+y_predicted = regressor.predict(scaled_x_test)
 
+plot.scatter(x_test.astype(dtype='datetime64[s]'),
+             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
+             s=12)
+plot.show()
 

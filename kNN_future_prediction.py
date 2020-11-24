@@ -15,7 +15,7 @@ df = data.dropna()
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
 
 df_train = df[(df["Timestamp"] >= timestamp) & (
-            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
+            df["Timestamp"] <= pandas.Timestamp("01/01/2019").timestamp())]
 
 df_validate = df[(df["Timestamp"] >= timestamp)]
 validate_x = df_validate[["Timestamp"]]
@@ -23,7 +23,7 @@ validate_y = df_validate[["Close"]]
 # Create new column with python datetime to plt graph
 df_train["Date"] = df_train["Timestamp"].values.astype(dtype='datetime64[s]')
 
-test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2020").timestamp())]
+test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2019").timestamp())]
 test_x = test_df[["Timestamp"]]
 test_y = test_df[["Close"]]
 

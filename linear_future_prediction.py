@@ -17,22 +17,15 @@ df = data.dropna()
 
 # Get unix timestamp for 01/01/2017
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
-# Drop rows after 01/01/2017
+# Drop rows after 01/01/2017 and after 01/01/2020
 df_train = df[(df["Timestamp"] >= timestamp) & (
-            df["Timestamp"] <= pandas.Timestamp("01/01/2019").timestamp())]
+            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
 
 # Create new column with python datetime to plt graph
 df_train["Date"] = df_train["Timestamp"].values.astype(dtype='datetime64[s]')
 
-# plot.plot_date(x=df_train["Date"], y=df_train["Close"], fmt="b")
-# plot.title("Bitcoin closing price from the start of 2017")
-# plot.ylabel("Closing Price in $")
-# plot.xlabel("Date")
-# plot.xticks(rotation=40)
-# plot.grid(True)
-# plot.show()
-
-test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2019").timestamp())]
+# Getting test data after 01/01/2020
+test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2020").timestamp())]
 test_x = test_df[["Timestamp"]]
 test_y = test_df[["Close"]]
 
@@ -58,10 +51,11 @@ lr = LinearRegression()
 lr.fit(scaled_x_train, scaled_y_train)
 y_predicted = lr.predict(scaled_test_x)
 score = lr.score(scaled_x_test, scaled_y_test)
-# Using scatter plot as plot_date function's linewidth property isn't working
+# Plotting test data after 01/01/20
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
-             minMaxScaler.inverse_transform(scaled_test_y), label="Actual",
-             s=12)
+             minMaxScaler.inverse_transform(scaled_test_y), label="Testing",
+             s=1)
+# Plotting predicted price
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
              minMaxScaler.inverse_transform(y_predicted), label="R^2 Score: " + str(format(score, ".3f")),
              s=12)

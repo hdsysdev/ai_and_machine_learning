@@ -18,13 +18,11 @@ df = data.dropna()
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
 # Drop rows after 01/01/2017
 df = df[df["Timestamp"] > timestamp]
-print(df)
-
-# Create new column with python datetime to plt graph
+# Create new column with python datetime to plot graph
 df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
-
+# Plot graph using matplotlib
 plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
-plot.title("Bitcoin closing price from the start of 2017")
+plot.title("Bitcoin closing price from January 2017")
 plot.ylabel("Closing Price in $")
 plot.xlabel("Date")
 plot.xticks(rotation=40)
@@ -44,7 +42,7 @@ scaled_y_test = minMaxScaler.fit_transform(y_test)
 
 plot.scatter(x_test.astype(dtype='datetime64[s]')[::50],
              minMaxScaler.inverse_transform(scaled_y_test[::50]),
-             s=1, label="Regular")
+             s=1.2, label="Actual")
 
 lr = LinearRegression(normalize=True)
 
@@ -54,8 +52,8 @@ y_predicted = lr.predict(scaled_x_test)
 score = lr.score(scaled_x_test, scaled_y_test)
 # Using scatter plot as plot_date function's linewidth property isn't working
 plot.scatter(x_test.astype(dtype='datetime64[s]'),
-             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
-             s=12)
+             minMaxScaler.inverse_transform(y_predicted), label="Predicted R^2 Score: " + str(format(score, ".3f")),
+             s=1.5)
 plot.legend(loc="lower right", fontsize="small")
 plot.show()
 print("Score: " + str(score))

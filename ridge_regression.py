@@ -1,18 +1,10 @@
-import pandas
-import numpy as np
 import matplotlib.pyplot as plot
-from matplotlib import style
-from sklearn.datasets import make_classification
-from sklearn.kernel_ridge import KernelRidge
-from sklearn.linear_model import LinearRegression, SGDRegressor, Ridge
-from sklearn.metrics import accuracy_score, classification_report
+import pandas
+from sklearn.linear_model import Ridge
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.svm import LinearSVC, SVR
+from sklearn.metrics import mean_squared_error
 
-# Read CSV to pandas dataframe
 data = pandas.read_csv("bitstamp.csv")
 # Create new dataframe dropping rows with NaN values
 df = data.dropna()
@@ -23,16 +15,7 @@ timestamp = pandas.Timestamp("01/01/2017").timestamp()
 df = df[df["Timestamp"] > timestamp]
 
 # Create new column with python datetime to plt graph
-# df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
-#
-# plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
-# plot.title("Bitcoin closing price from the start of 2017")
-# plot.ylabel("Closing Price in $")
-# plot.xlabel("Date")
-# plot.xticks(rotation=40)
-# plot.grid(True)
-# plot.show()
-
+df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
 
 x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
@@ -40,11 +23,35 @@ y = pandas.DataFrame(df["Close"])
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 minMaxScaler = MinMaxScaler()
 scaled_x_train = minMaxScaler.fit_transform(x_train)
-scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
+scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
-param_grid = {'alpha': [10, 8, 6, 4, 2, 1.0, 0.75, 0.5, 0.25, 0.2, 0.1]}
-model = make_pipeline(PolynomialFeatures(5), GridSearchCV(Ridge(), param_grid=param_grid))
 
-model.fit(scaled_x_train, scaled_y_train.ravel())
-print(model.score(scaled_x_test, scaled_y_test))
+
+# Setting hyperparameters to try with Ridge regression
+parameters = {"fit_intercept": [True, False],
+              "solver": ["svd", "cholesky", "lsqr", "sparse_cg", "sag", "saga"]}
+# Using GridSearchCV to optimise model
+regressor = GridSearchCV(Ridge(), parameters)
+regressor.fit(scaled_x_train, scaled_y_train)
+y_predicted = regressor.predict(scaled_x_test)
+score = regressor.score(scaled_x_test, scaled_y_test)
+# Using scatter plot as plot_date function's linewidth property isn't working
+print("R^2 Score: " + str(score))
+print("Mean Squared Error: " + str(mean_squared_error(y_test, minMaxScaler.inverse_transform(y_predicted))))
+print("Best params: " + str(regressor.best_params_))
+
+plot.scatter(x_test.astype(dtype='datetime64[s]'),
+             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
+             s=1)
+# Converting timestamp values to datetime64 for plotting as human readable time
+# Plotting every 50th value to avoid over-congestion of points
+plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50], minMaxScaler.inverse_transform(scaled_y_test[::50]),
+             s=1, label="Regular")
+plot.title("Bitcoin price in USD alongside predicted price using Ridge regression")
+plot.ylabel("Predicted Closing Price in $")
+plot.xlabel("Date")
+plot.grid(True)
+plot.xticks(rotation=40)
+plot.legend(loc="lower right", fontsize="small")
+plot.show()

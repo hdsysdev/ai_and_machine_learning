@@ -53,7 +53,8 @@ scaled_test_y = minMaxScaler.fit_transform(test_y)
 
 # Converting timestamp values to datetime64 for plotting as human readable time
 # Plotting every 50th value to avoid over-congestion of points
-plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50], scaled_y_test[::50], s=1, label="Train")
+plot.scatter(x_train.values.astype(dtype='datetime64[s]')[::50],
+             y_train[::50], s=1, label="Train")
 # Generating polynomial features up to a degree of 8 to find the most optimal degree
 lr = make_pipeline(PolynomialFeatures(), LinearRegression())
 lr.fit(scaled_x_train, scaled_y_train)
@@ -61,12 +62,12 @@ y_predicted = lr.predict(scaled_test_x)
 score = lr.score(scaled_test_x, scaled_test_y)
 # Using scatter plot as plot_date function's linewidth property isn't working
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
-             scaled_test_y, label="Actual",
+             minMaxScaler.inverse_transform(scaled_test_y), label="Actual",
              s=12)
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
-             y_predicted, label="Degree 8" + " R^2 Score: " + str(format(score, ".3f")),
+             minMaxScaler.inverse_transform(y_predicted), label="R^2 Score: " + str(format(score, ".3f")),
              s=12)
-print("Polynomial Degree 8" + " Score: " + str(score))
+print("Polynomial Degree 2" + " Score: " + str(score))
 
 plot.legend(loc="lower right", fontsize="small")
 plot.show()

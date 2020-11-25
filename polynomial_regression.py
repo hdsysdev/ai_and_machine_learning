@@ -1,14 +1,10 @@
-import pandas
-import numpy as np
 import matplotlib.pyplot as plot
-from matplotlib import style
-from sklearn.datasets import make_classification
+import pandas
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
-from sklearn.svm import LinearSVC
 
 # Read CSV to pandas dataframe
 data = pandas.read_csv("bitstamp.csv")
@@ -23,14 +19,6 @@ df = df[df["Timestamp"] > timestamp]
 # Create new column with python datetime to plt graph
 df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
 
-# plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
-# plot.title("Bitcoin closing price from the start of 2017")
-# plot.ylabel("Closing Price in $")
-# plot.xlabel("Date")
-# plot.xticks(rotation=40)
-# plot.grid(True)
-# plot.show()
-
 x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
 
@@ -41,20 +29,28 @@ scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
 
-# Converting timestamp values to datetime64 for plotting as human readable time
-# Plotting every 50th value to avoid over-congestion of points
-plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50], scaled_y_test[::50], s=1, label="Regular")
+# Plotting original test values to compare to predicted values
+plot.scatter(x_test.values.astype(dtype='datetime64[s]')[::50],
+             scaled_y_test[::50], s=1, label="Regular")
 # Generating polynomial features up to a degree of 8 to find the most optimal degree
 for polyDegree in range(2, 9):
     lr = make_pipeline(PolynomialFeatures(polyDegree), LinearRegression())
+    # Fitting model on training data
     lr.fit(scaled_x_train, scaled_y_train)
     y_predicted = lr.predict(scaled_x_test)
     score = lr.score(scaled_x_test, scaled_y_test)
-    # Using scatter plot as plot_date function's linewidth property isn't working
+    # Plotting predictions made by linear regression with polynomical features
     plot.scatter(x_test.values.astype(dtype='datetime64[s]'),
-                 y_predicted, label="Degree " + str(polyDegree) + " R^2 Score: " + str(format(score, ".3f")),
-                 s=12)
-    print("Polynomial Degree " + str(polyDegree) + " Score: " + str(score))
+                 y_predicted, label=str(polyDegree) + "° R^2: " + str(format(score, ".3f")),
+                 s=5)
+    print("Degree " + str(polyDegree) + "Score: " + str(score))
+    print("Degree " + str(polyDegree) + " Mean Squared Error: " +
+          str(mean_squared_error(y_test, minMaxScaler.inverse_transform(y_predicted))))
 
-plot.legend(loc="lower right", fontsize="small")
+plot.title("Polynomial regression to predict future price of bitcoin in USD")
+plot.ylabel("Closing Price in $")
+plot.xlabel("Date")
+plot.grid(True)
+plot.xticks(rotation=40)
+plot.legend(loc="upper left", fontsize="small")
 plot.show()

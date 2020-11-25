@@ -4,7 +4,7 @@ import matplotlib.pyplot as plot
 from matplotlib import style
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
@@ -35,10 +35,7 @@ y = pandas.DataFrame(df_train["Close"])
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
 minMaxScaler = MinMaxScaler()
 scaled_x_train = minMaxScaler.fit_transform(x_train)
-scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
-scaled_y_test = minMaxScaler.fit_transform(y_test)
-
 scaled_test_x = minMaxScaler.fit_transform(test_x)
 scaled_test_y = minMaxScaler.fit_transform(test_y)
 
@@ -50,7 +47,7 @@ plot.scatter(x_train.values.astype(dtype='datetime64[s]')[::50],
 lr = LinearRegression()
 lr.fit(scaled_x_train, scaled_y_train)
 y_predicted = lr.predict(scaled_test_x)
-score = lr.score(scaled_x_test, scaled_y_test)
+score = lr.score(scaled_test_x, scaled_test_y)
 # Plotting test data after 01/01/20
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
              minMaxScaler.inverse_transform(scaled_test_y), label="Testing",
@@ -58,8 +55,15 @@ plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
 # Plotting predicted price
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
              minMaxScaler.inverse_transform(y_predicted), label="R^2 Score: " + str(format(score, ".3f")),
-             s=12)
-print("Score: " + str(score))
+             s=2)
 
+print("Score: " + str(score))
+print("Mean Squared Error: " + str(mean_squared_error(test_y, minMaxScaler.inverse_transform(y_predicted))))
+
+plot.title("Linear regression to predict future price of bitcoin in USD")
+plot.ylabel("Closing Price in $")
+plot.xlabel("Date")
+plot.grid(True)
+plot.xticks(rotation=40)
 plot.legend(loc="lower right", fontsize="small")
 plot.show()

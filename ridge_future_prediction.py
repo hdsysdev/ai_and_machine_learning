@@ -34,7 +34,7 @@ scaled_x_test = minMaxScaler.fit_transform(test_x)
 scaled_y_test = minMaxScaler.fit_transform(test_y)
 
 # Using GridSearchCV to optimise model
-regressor = Ridge(fit_intercept=True, solver="sparse_cg")
+regressor = Ridge(alpha=1, solver="sag")
 regressor.fit(scaled_x_train, scaled_y_train)
 y_predicted = regressor.predict(scaled_x_test)
 score = regressor.score(scaled_x_test, scaled_y_test)
@@ -48,14 +48,14 @@ plot.scatter(x_train.astype(dtype='datetime64[s]'),
              s=1)
 # Plotting predicted values
 plot.scatter(test_x.astype(dtype='datetime64[s]'),
-             minMaxScaler.inverse_transform(y_predicted), label=" R^2 Score: " + str(format(score, ".3f")),
+             minMaxScaler.inverse_transform(y_predicted), label="Predicted R^2 Score: " + str(format(score, ".3f")),
              s=1)
 # Plotting test values
 plot.scatter(test_x.values.astype(dtype='datetime64[s]')[::50],
              minMaxScaler.inverse_transform(scaled_y_test[::50]),
-             s=1, label="Regular")
+             s=1, label="Actual")
 plot.title("Bitcoin price in USD alongside predicted price using Ridge regression")
-plot.ylabel("Predicted Closing Price in $")
+plot.ylabel("Closing Price in $")
 plot.xlabel("Date")
 plot.grid(True)
 plot.xticks(rotation=40)

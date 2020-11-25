@@ -1,13 +1,9 @@
-import pandas
-import numpy as np
 import matplotlib.pyplot as plot
-from matplotlib import style
-from sklearn.datasets import make_classification
+import pandas
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.svm import LinearSVC
+from sklearn.metrics import mean_squared_error
 
 # Read CSV to pandas dataframe
 data = pandas.read_csv("bitstamp.csv")
@@ -18,21 +14,11 @@ df = data.dropna()
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
 # Drop rows after 01/01/2017
 df = df[df["Timestamp"] > timestamp]
-# Create new column with python datetime to plot graph
-df["Date"] = df["Timestamp"].values.astype(dtype='datetime64[s]')
-# Plot graph using matplotlib
-plot.plot_date(x=df["Date"], y=df["Close"], fmt="b")
-plot.title("Bitcoin closing price from January 2017")
-plot.ylabel("Closing Price in $")
-plot.xlabel("Date")
-plot.xticks(rotation=40)
-plot.grid(True)
-plot.show()
-
 
 x = pandas.DataFrame(df["Timestamp"])
 y = pandas.DataFrame(df["Close"])
 
+# Split training and test sets from full set of data
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=1)
 minMaxScaler = MinMaxScaler()
 scaled_x_train = minMaxScaler.fit_transform(x_train)
@@ -40,20 +26,27 @@ scaled_x_test = minMaxScaler.fit_transform(x_test)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
 scaled_y_test = minMaxScaler.fit_transform(y_test)
 
-plot.scatter(x_test.astype(dtype='datetime64[s]')[::50],
-             minMaxScaler.inverse_transform(scaled_y_test[::50]),
-             s=1.2, label="Actual")
-
-lr = LinearRegression(normalize=True)
-
+# Training model on training data
+lr = LinearRegression()
 lr.fit(scaled_x_train, scaled_y_train)
 
+# Scoring model and predicting price based on test set to calculate MSE.
 y_predicted = lr.predict(scaled_x_test)
 score = lr.score(scaled_x_test, scaled_y_test)
-# Using scatter plot as plot_date function's linewidth property isn't working
+# Plotting actual price of bitcoin from test set. Using every 50th value to avoid over-congestion
+plot.scatter(x_test.astype(dtype='datetime64[s]')[::50],
+             y_test[::50],
+             s=1.2, label="Actual")
+# Plotting predicted price of bitcoin. Using MinMaxScaler to transform the values back to USD
 plot.scatter(x_test.astype(dtype='datetime64[s]'),
              minMaxScaler.inverse_transform(y_predicted), label="Predicted R^2 Score: " + str(format(score, ".3f")),
              s=1.5)
+plot.title("Linear regression predicted price of bitcoin in USD")
+plot.ylabel("Closing Price in $")
+plot.xlabel("Date")
+plot.grid(True)
+plot.xticks(rotation=40)
 plot.legend(loc="lower right", fontsize="small")
 plot.show()
 print("Score: " + str(score))
+print("Mean Squared Error: " + str(mean_squared_error(y_test, minMaxScaler.inverse_transform(y_predicted))))

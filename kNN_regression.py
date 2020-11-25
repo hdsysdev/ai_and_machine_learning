@@ -45,7 +45,7 @@ plot.scatter(x_test.astype(dtype='datetime64[s]'),
              s=1)
 # Set title and axis labels for graph
 plot.title("kNN predicted bitcoin USD price on testing data")
-plot.ylabel("Predicted Closing Price in $")
+plot.ylabel("Closing Price in $")
 plot.xlabel("Date")
 plot.grid(True)
 plot.xticks(rotation=40)

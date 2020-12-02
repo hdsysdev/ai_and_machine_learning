@@ -1,14 +1,15 @@
-import pandas
-import numpy as np
+# In this file plolynomial features are generated and a linear regression model is trained on past data before 2020. Price data
+# after 2020 is predicted using the model then this predicted data is plotted against all the actual data after
+# 2017 for comparison.
+
+# Import required libraries
 import matplotlib.pyplot as plot
-from matplotlib import style
-from sklearn.datasets import make_classification
+import pandas
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import accuracy_score, classification_report, mean_squared_error
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler, PolynomialFeatures
-from sklearn.svm import LinearSVC
 
 # Read CSV to pandas dataframe
 data = pandas.read_csv("bitstamp.csv")
@@ -17,51 +18,67 @@ df = data.dropna()
 
 # Get unix timestamp for 01/01/2017
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
-# Drop rows after 01/01/2017
+# Get dataframe containing entries between 01/01/2017 and 01/01/2020
 df_train = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2017").timestamp()) & (
             df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
 
-# Create new column with python datetime to plt graph
+# Create new column with python datetime to plot graph with a date x axis
 df_train["Date"] = df_train["Timestamp"].values.astype(dtype='datetime64[s]')
 
+# Create dataframe from entries after 01/01/2020 to test trained model on the unseen future data
 test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2020").timestamp())]
+# Create sets from testing dataframe to use in testing the model
 test_x = test_df[["Timestamp"]]
 test_y = test_df[["Close"]]
 
-x = pandas.DataFrame(df_train["Timestamp"])
-y = pandas.DataFrame(df_train["Close"])
+# Get X and Y axes for training the dataset
+x_train = pandas.DataFrame(df_train["Timestamp"])
+y_train = pandas.DataFrame(df_train["Close"])
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=0)
+# Create Min Max Scaler to scale data prior to training
 minMaxScaler = MinMaxScaler()
+# Scale training data using min max scaler
 scaled_x_train = minMaxScaler.fit_transform(x_train)
 scaled_y_train = minMaxScaler.fit_transform(y_train)
-
+# Scale testing data using min max scaler
 scaled_test_x = minMaxScaler.fit_transform(test_x)
 scaled_test_y = minMaxScaler.fit_transform(test_y)
 
 # Converting timestamp values to datetime64 for plotting as human readable time
-# Plotting every 50th value to avoid over-congestion of points
+# Plotting every 50th training value to avoid over-congestion of points
 plot.scatter(x_train.values.astype(dtype='datetime64[s]')[::50],
              y_train[::50], s=2, label="Train")
-# Generating polynomial features up to a degree of 8 to find the most optimal degree
-lr = make_pipeline(PolynomialFeatures(2), LinearRegression())
+# Generating polynomial features up to a degree of 8 due to it being found as the most accurate degree
+# Creating pipeline with a linear regression algorithm then training the model on scaled data
+lr = make_pipeline(PolynomialFeatures(8), LinearRegression())
 lr.fit(scaled_x_train, scaled_y_train)
+# Predicting price using model to plot against the original price
 y_predicted = lr.predict(scaled_test_x)
+# Scoring model on testing data
 score = lr.score(scaled_test_x, scaled_test_y)
-# Using scatter plot as plot_date function's linewidth property isn't working
+
+# Converting timestamp values to datetime64 for plotting as human readable time
+# PLot original testing price data after 01/01/2020.
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
-             minMaxScaler.inverse_transform(scaled_test_y), label="Actual",
+             test_y, label="Actual",
              s=2)
+# Inversely transforming predicted price to USD and plotting price to compare to actual price
 plot.scatter(test_x.values.astype(dtype='datetime64[s]'),
              minMaxScaler.inverse_transform(y_predicted), label="R^2 Score: " + str(format(score, ".3f")),
              s=4)
+# Print score
 print("Polynomial Degree 8 Score: " + str(score))
+# Calculate and display mean squared error using actual test set price data and scaled price data predicted by the model
+# inversely transformed into the original scale it was prior to scaling
 print("Mean Squared Error: " + str(mean_squared_error(test_y, minMaxScaler.inverse_transform(y_predicted))))
 
+# Set title and axis labels for graph
 plot.title("8 Degree polynomial regression predicting future price of bitcoin in USD")
 plot.ylabel("Closing Price in $")
 plot.xlabel("Date")
-plot.grid(True)
 plot.xticks(rotation=40)
+
+# Show legend and grid then display graph
+plot.grid(True)
 plot.legend(loc="upper left", fontsize="small")
 plot.show()

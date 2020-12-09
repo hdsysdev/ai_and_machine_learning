@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file the dataset is visualised using pyplot. Price data since the start of the dataset is plotted on one graph
 # as well as data after 2017 being plotted in another.
 

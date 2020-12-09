@@ -1,11 +1,11 @@
-# In this file a kNN model is trained on past data from 2017 to 2019. Price data after 2019 is predicted using the model
+# Author: Hubert Dudowicz - S17119577
+# In this file a kNN model is trained on past data from 2017 to 2020. Price data after 2020 is predicted using the model
 # then this predicted data is plotted against all of the actual data after 2017 for comparison.
 
 # Import required libraries
 import matplotlib.pyplot as plot
 import pandas
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.preprocessing import MinMaxScaler
 
@@ -17,9 +17,9 @@ df = data.dropna()
 # Get unix timestamp for 01/01/2017
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
 
-# Get dataframe containing entries between 01/01/2017 and 01/01/2019
+# Get dataframe containing entries between 01/01/2017 and 01/01/2020
 df_train = df[(df["Timestamp"] >= timestamp) & (
-            df["Timestamp"] <= pandas.Timestamp("01/01/2019").timestamp())]
+            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
 
 # Create validation set of entries after 01/01/2017
 df_validate = df[(df["Timestamp"] >= timestamp)]
@@ -29,8 +29,8 @@ validate_y = df_validate[["Close"]]
 # Create new column from timestamp with python datetime to plot graph with dates on the x axis
 df_train["Date"] = df_train["Timestamp"].values.astype(dtype='datetime64[s]')
 
-# Create dataframe from entries after 01/01/2019 to test trained model on the unseen future data
-test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2019").timestamp())]
+# Create dataframe from entries after 01/01/2020 to test trained model on the unseen future data
+test_df = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2020").timestamp())]
 # Create sets from testing dataframe to use in testing the model
 test_x = test_df[["Timestamp"]]
 test_y = test_df[["Close"]]

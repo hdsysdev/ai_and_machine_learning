@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file a linear regression model is trained and scored. Price data is predicted based on the dates in the
 # testing set. The actual testing data is then plotted against the predicted price data.
 

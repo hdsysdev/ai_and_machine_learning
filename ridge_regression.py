@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file a ridge regression model is trained and the hyper-parameters are optimised using GridSearchCV.
 # Price data is then predicted using the model then this predicted data is plotted against
 # all of the actual data after 2017 for comparison.

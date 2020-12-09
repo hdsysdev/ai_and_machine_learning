@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file polynomial features are generated to various degrees and a linear regression model is trained
 # for each to find the most effective degree. Predicted data is plotted against all the actual data after
 # 2017 for comparison.

@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file plolynomial features are generated and a linear regression model is trained on past data before 2020. Price data
 # after 2020 is predicted using the model then this predicted data is plotted against all the actual data after
 # 2017 for comparison.

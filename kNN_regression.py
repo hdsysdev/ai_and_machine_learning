@@ -1,4 +1,5 @@
-# In this file a kNN model is trained and scored. Price data is predicted based on the dates in the testing set.
+# Author: Hubert Dudowicz - S17119577
+# n this file a kNN model is trained and scored. Price data is predicted based on the dates in the testing set.
 # The actual testing data is then plotted against the predicted price data.
 
 # Import required libraries

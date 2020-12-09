@@ -1,3 +1,4 @@
+# Author: Hubert Dudowicz - S17119577
 # In this file a linear regression model is trained on past data from 2017 to 2020. Price data after 2020 is predicted
 # using the model then this predicted data is plotted against all of the actual data after 2017 for comparison.
 

@@ -19,7 +19,7 @@ timestamp = pandas.Timestamp("01/01/2017").timestamp()
 
 # Get dataframe containing entries between 01/01/2017 and 01/01/2020
 df_train = df[(df["Timestamp"] >= timestamp) & (
-            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
+            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())].copy()
 
 # Create validation set of entries after 01/01/2017
 df_validate = df[(df["Timestamp"] >= timestamp)]

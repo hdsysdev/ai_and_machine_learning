@@ -9,7 +9,7 @@ import pandas
 # Read CSV to pandas dataframe
 data = pandas.read_csv("bitstamp.csv")
 # Create new dataframe dropping rows with NaN values
-df = data.dropna()
+df = data.dropna().copy()
 
 # Get unix timestamp for 01/01/2017
 timestamp = pandas.Timestamp("01/01/2017").timestamp()

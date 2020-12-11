@@ -21,7 +21,7 @@ df = data.dropna()
 timestamp = pandas.Timestamp("01/01/2017").timestamp()
 # Get dataframe containing entries between 01/01/2017 and 01/01/2020
 df_train = df[(df["Timestamp"] >= pandas.Timestamp("01/01/2017").timestamp()) & (
-            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())]
+            df["Timestamp"] <= pandas.Timestamp("01/01/2020").timestamp())].copy()
 
 # Create new column with python datetime to plot graph with a date x axis
 df_train["Date"] = df_train["Timestamp"].values.astype(dtype='datetime64[s]')
